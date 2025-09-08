@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#gameArea {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: var(--background-color);
+    border: 2px solid var(--border-color);
+    margin: 0 auto;
+}
+
+.player {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+#player1 {
+    background-color: blue;
+}
+
+#player2 {
+    background-color: green;
+}
+        
+.arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+}
+
+:root {
+    --background-color: #f0f0f0;
+    --border-color: #000;
+}
+        
+.dark-mode {
+    --background-color: #333;
+    --border-color: #fff;
+}
+        
+#gameOverMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid #000;
+    display: none;
+    padding: 20px;
+    text-align: center;
+    z-index: 10;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+        
+#gameOverMenu h2 {
+    color: #d9534f;
+        
+#reloadButton {
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+        
+#reloadButton:hover {
+    background-color: #31b0d5;
+}
+}
