@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameInterval;
     let gameActive = false;
     let lastDirection = 'right';
+    let player1Name = "Player 1";
 
     const initialGameAreaWidth = 600;
     const initialGameAreaHeight = 400;
@@ -88,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data.success) {
                 currentUser = username;
+                player1Name = currentUser;
                 loginArea.style.display = 'none';
                 gameArea.style.display = '';
                 resetGame();
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 arrows.splice(i, 1);
                 if (player1HP <= 0) {
                     winSound.play();
-                    endGame("Player 2 wins!", false);
+                    endGame("${player1Name} loses!", false);
                 }
             } else if (arrow.owner === 'player1' && arrow.checkCollision(player2)) {
                 player2HP = Math.max(0, player2HP - 10);
@@ -199,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function endGame(resultMessage, playerWon) {
         winnerMessageElem.innerText = resultMessage;
         gameDurationElem.innerText = `Duration: ${gameDuration.toFixed(2)} seconds`;
-        player1HealthElem.innerText = `Player 1 Health: ${player1HP}`;
+        player1HealthElem.innerText = `${player1Name}'s Health: ${player1HP}`;
         player2HealthElem.innerText = `Player 2 Health: ${player2HP}`;
         gameOverMenu.style.display = 'block';
         gameActive = false;
