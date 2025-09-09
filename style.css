@@ -4,6 +4,10 @@ body {
     font-family: Arial, sans-serif;
 }
 
+#loginArea {
+    margin-top: 30px;
+}
+
 #gameArea {
     position: relative;
     width: 600px;
@@ -63,6 +67,11 @@ body {
         
 #gameOverMenu h2 {
     color: #d9534f;
+}
+        
+#gameOverMenu p {
+    margin: 10px 0;
+}
         
 #reloadButton {
     background-color: #5bc0de;
@@ -76,5 +85,4 @@ body {
         
 #reloadButton:hover {
     background-color: #31b0d5;
-}
 }
