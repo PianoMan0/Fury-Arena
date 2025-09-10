@@ -24,10 +24,15 @@
             <div id="player1" class="player"></div>
             <div id="player2" class="player"></div>
         </div>
+        <div id="shopArea" style="display:none;">
+            <h2>Shop</h2>
+            <p id="coinsDisplay"></p>
+            <div id="skinsList"></div>
+            <button id="backToGameButton">Back to Game</button>
+        </div>
+        <button id="shopButton" style="display:none;">Shop</button>
     </center>
-
     <audio id="winSound" src="winfuryarena.mp3" preload="auto"></audio>
-
     <div id="gameOverMenu">
         <h2>Game Over</h2>
         <p id="gameDuration"></p>
@@ -35,7 +40,9 @@
         <p id="player2Health"></p>
         <p id="winnerMessage"></p>
         <p id="winStreakMessage"></p>
+        <p id="coinsEarnedMessage"></p>
         <button id="reloadButton">Reload Game</button>
+        <button id="goToShopButton">Go to Shop</button>
     </div>
 </body>
 </html>

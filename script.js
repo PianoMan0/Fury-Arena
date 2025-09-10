@@ -15,6 +15,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const reloadButton = document.getElementById('reloadButton');
     const winnerMessageElem = document.getElementById('winnerMessage');
     const winStreakElem = document.getElementById('winStreakMessage');
+    const coinsEarnedElem = document.getElementById('coinsEarnedMessage');
+    const shopButton = document.getElementById('shopButton');
+    const shopArea = document.getElementById('shopArea');
+    const coinsDisplay = document.getElementById('coinsDisplay');
+    const skinsList = document.getElementById('skinsList');
+    const goToShopButton = document.getElementById('goToShopButton');
+    const backToGameButton = document.getElementById('backToGameButton');
+
+    // Skins system
+    const AVAILABLE_SKINS = [
+        { name: 'blue', color: 'blue', cost: 0 },
+        { name: 'red', color: 'red', cost: 25 },
+        { name: 'purple', color: 'purple', cost: 50 },
+        { name: 'gold', color: 'gold', cost: 100 },
+        { name: 'black', color: 'black', cost: 75 },
+        { name: 'pink', color: 'pink', cost: 40 }
+    ];
 
     let player1Pos = { x: 100, y: 100 };
     let player2Pos = { x: 200, y: 200 };
@@ -28,12 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameActive = false;
     let lastDirection = 'right';
     let player1Name = "Player 1";
+    let currentUser = null;
+    let coins = 0;
+    let ownedSkins = ['blue'];
+    let selectedSkin = 'blue';
 
     const initialGameAreaWidth = 600;
     const initialGameAreaHeight = 400;
     const minGameAreaSize = 200;
-
-    let currentUser = null;
 
     class Arrow {
         constructor(x, y, direction, color, owner) {
@@ -92,8 +111,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 player1Name = currentUser;
                 loginArea.style.display = 'none';
                 gameArea.style.display = '';
+                shopButton.style.display = '';
                 resetGame();
                 gameActive = true;
+                // Get coins & skin
+                fetch('user.php', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `username=${encodeURIComponent(currentUser)}&action=get_coins`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    coins = data.coins;
+                    ownedSkins = data.owned_skins || ['blue'];
+                    selectedSkin = data.selected_skin || 'blue';
+                    applySelectedSkin();
+                });
             } else {
                 loginMessage.textContent = data.message || 'Error logging in.';
             }
@@ -143,16 +176,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function shootArrow(player, pos, color, direction, owner) {
-        const dir = owner === 'player1' ? lastDirection : direction;
         const arrow = new Arrow(
             pos.x + player.clientWidth / 2 - 5,
             pos.y + player.clientHeight / 2 - 5,
-            dir,
+            direction,
             color,
             owner
         );
         arrows.push(arrow);
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (!gameActive || shopArea.style.display !== 'none') return;
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            movePlayer(player1, player1Pos, e.key, player2Pos);
+        }
+        if (e.key === ' ') {
+            shootArrow(player1, player1Pos, getSkinColor(selectedSkin), lastDirection, 'player1');
+        }
+    });
 
     function checkCollision() {
         for (let i = arrows.length - 1; i >= 0; i--) {
@@ -163,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 arrows.splice(i, 1);
                 if (player1HP <= 0) {
                     winSound.play();
-                    endGame("${player1Name} loses!", false);
+                    endGame(`${player1Name} loses!`, false);
                 }
             } else if (arrow.owner === 'player1' && arrow.checkCollision(player2)) {
                 player2HP = Math.max(0, player2HP - 10);
@@ -194,8 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
         gameOverMenu.style.display = 'none';
         winnerMessageElem.innerText = '';
         winStreakElem.innerText = '';
+        coinsEarnedElem.innerText = '';
         gameArea.style.width = `${initialGameAreaWidth}px`;
         gameArea.style.height = `${initialGameAreaHeight}px`;
+        applySelectedSkin();
     }
 
     function endGame(resultMessage, playerWon) {
@@ -214,21 +258,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             winStreakElem.innerText = `Your win streak: ${data.win_streak || 0}`;
+            coinsEarnedElem.innerText = `Coins earned: ${data.coins_earned || 0}`;
+            coins = data.coins || coins;
+            updateShopButton();
         })
         .catch(() => {
             winStreakElem.innerText = "Win streak unavailable.";
+            coinsEarnedElem.innerText = "";
         });
     }
-
-    document.addEventListener('keydown', (e) => {
-        if (!gameActive) return;
-        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-            movePlayer(player1, player1Pos, e.key, player2Pos);
-        }
-        if (e.key === ' ') {
-            shootArrow(player1, player1Pos, 'blue', lastDirection, 'player1');
-        }
-    });
 
     function moveBot() {
         if (!gameActive) return;
@@ -278,6 +316,99 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('dark-mode', hour >= 17 || hour < 9);
     }
 
+    function getSkinColor(skinName) {
+        const found = AVAILABLE_SKINS.find(s => s.name === skinName);
+        return found ? found.color : 'blue';
+    }
+
+    function applySelectedSkin() {
+        player1.style.backgroundColor = getSkinColor(selectedSkin);
+    }
+
+    // SHOPPPPPPPPPP
+    function updateShopButton() {
+        if (currentUser) {
+            shopButton.style.display = '';
+            shopButton.innerText = `Shop (${coins} coins)`;
+        }
+    }
+
+    shopButton.addEventListener('click', () => {
+        showShop();
+    });
+
+    goToShopButton.addEventListener('click', () => {
+        gameOverMenu.style.display = 'none';
+        showShop();
+    });
+
+    backToGameButton.addEventListener('click', () => {
+        shopArea.style.display = 'none';
+        gameArea.style.display = '';
+        updateShopButton();
+    });
+
+    function showShop() {
+        shopArea.style.display = '';
+        gameArea.style.display = 'none';
+        coinsDisplay.innerText = `Coins: ${coins}`;
+        renderSkinsList();
+    }
+
+    function renderSkinsList() {
+        skinsList.innerHTML = '';
+        AVAILABLE_SKINS.forEach(skin => {
+            const div = document.createElement('div');
+            div.className = 'shop-skin';
+            div.style.backgroundColor = skin.color;
+            div.title = `${skin.name} (${skin.cost} coins)`;
+            if (ownedSkins.includes(skin.name)) {
+                div.classList.add('owned');
+            }
+            if (selectedSkin === skin.name) {
+                div.classList.add('selected');
+            }
+            div.onclick = () => {
+                if (ownedSkins.includes(skin.name)) {
+                    fetch('user.php', {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `username=${encodeURIComponent(currentUser)}&action=select_skin&skin=${encodeURIComponent(skin.name)}`
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            selectedSkin = skin.name;
+                            applySelectedSkin();
+                            renderSkinsList();
+                        }
+                    });
+                } else if (coins >= skin.cost) {
+                    fetch('user.php', {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `username=${encodeURIComponent(currentUser)}&action=buy_skin&skin=${encodeURIComponent(skin.name)}&cost=${skin.cost}`
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            ownedSkins.push(skin.name);
+                            coins -= skin.cost;
+                            coinsDisplay.innerText = `Coins: ${coins}`;
+                            renderSkinsList();
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                } else {
+                    alert("Not enough coins!");
+                }
+            };
+            div.innerHTML = `<span style="color:#fff;font-size:12px;position:absolute;bottom:2px;left:2px;">${skin.name}</span>`;
+            skinsList.appendChild(div);
+        });
+    }
+
     player1.style.left = `${player1Pos.x}px`;
     player1.style.top = `${player1Pos.y}px`;
     player2.style.left = `${player2Pos.x}px`;
@@ -298,4 +429,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(applyTheme, 60000);
 
     reloadButton.addEventListener('click', resetGame);
+
 });
