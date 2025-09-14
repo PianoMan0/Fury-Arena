@@ -36,7 +36,7 @@ if ($username !== '') {
         $stmt->execute([$username, $streak]);
     }
 
-    // Coins logic: Give 10 coins per win
+    // Give 10 coins per win
     $coinsEarned = ($won === '1') ? 10 : 0;
     $stmt = $db->prepare("SELECT coins FROM coins WHERE username = ?");
     $stmt->execute([$username]);
