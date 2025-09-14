@@ -1,14 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Login Area and Form
-    const loginArea = document.getElementById('loginArea');
-    const loginForm = document.getElementById('loginForm');
 
-    // Username and Password Input Fields
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-
-    // Display Messages for Login and Game
-    const loginMessage = document.getElementById('loginMessage');
     const gameArea = document.getElementById('gameArea');
 
     // Player 1 and Player 2 Elements
