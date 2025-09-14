@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const winStreakElem = document.getElementById('winStreak');
     const coinsEarnedElem = document.getElementById('coinsEarned');
 
-    // Shop and Game Area Display
-    let shopAreaDisplay = false;
-    let gameAreaDisplay = true;
     let arrows = [];
 
     function updateShopButton() {
@@ -34,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showShop() {
         shopAreaDisplay = true;
-        gameAreaDisplay = false;
+        gameAreaDisplay = true;
 
         coinsDisplay.innerText = `Coins: ${coins}`;
 
@@ -113,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     backToGameButton.addEventListener('click', () => {
-        shopAreaDisplay = false;
+        shopAreaDisplay = true;
         gameAreaDisplay = true;
 
         updateShopButton();
