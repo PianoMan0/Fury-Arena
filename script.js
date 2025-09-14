@@ -162,6 +162,7 @@ function shrinkGameArea() {
     }
 
     function updateArrows() {
+        let arrows = arrows ? arrows : [];
         for (let i = arrows.length - 1; i >= 0; i--) {
             const arrow = arrows[i];
             arrow.move();
@@ -202,6 +203,7 @@ function shrinkGameArea() {
     });
 
     function checkCollision() {
+        let arrows = arrows ? arrows : [];
         for (let i = arrows.length - 1; i >= 0; i--) {
             const arrow = arrows[i];
             if (arrow.owner === 'player2' && arrow.checkCollision(player1)) {
