@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Win Sound and Game Over Menu Elements
     const winSound = new Audio();
-    winSound.src = 'win.mp3';
     const gameOverMenu = document.getElementById('gameOverMenu');
 
     // Health and Win Streak Elements
