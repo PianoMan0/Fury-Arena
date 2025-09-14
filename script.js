@@ -122,34 +122,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let player1Pos = { x: 100, y: 100 };
     let player2Pos = { x: 200, y: 200 };
 
-function moveBot() {
-    if (!gameActive) return;
-    const dx = player2Pos.x - player1Pos.x;
-    const dy = player2Pos.y - player1Pos.y;
-    let botDirection = determineNextDirection(dx, dy);
-    movePlayer(player2, player2Pos, botDirection, player1Pos);
-    let newBotDirection = botDirection;
-    if (Math.random() < 0.1) {
-        shootArrow('player2', player2Pos, 'green', newBotDirection, 'player2');
-    }
-}
 
-function determineNextDirection(dx, dy) {
-    // Update the direction every 10 frames
-    if (Math.random() < 0.1) {
-        const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-        return directions[Math.floor(Math.random() * 4)];
-    } else if (Math.abs(dx) > Math.abs(dy)) {
-        // Update the direction based on x and y velocities
-        return dx > 0 ? 'ArrowRight' : 'ArrowLeft';
-    } else {
-        // Update the direction based on y and x velocities
-        return dy > 0 ? 'ArrowDown' : 'ArrowUp';
+    function moveBot() {
+        if (!gameActive) return;
+        const dx = player2Pos.x - player1Pos.x;
+        const dy = player2Pos.y - player1Pos.y;
+        let botDirection = determineNextDirection(dx, dy);
+        movePlayer(player2, player2Pos, botDirection, player1Pos);
+        let newBotDirection = botDirection;
+        if (Math.random() < 0.1) {
+            shootArrow('player2', player2Pos, 'green', newBotDirection, 'player2');
+        }
     }
-}
 
-function shrinkGameArea() {
-    const currentWidth = gameArea.clientWidth;
+    function determineNextDirection(dx, dy) {
+        // Update the direction every 10 frames
+        if (Math.random() < 0.1) {
+            const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+            return directions[Math.floor(Math.random() * 4)];
+        } else if (Math.abs(dx) > Math.abs(dy)) {
+            // Update the direction based on x and y velocities
+            return dx > 0 ? 'ArrowRight' : 'ArrowLeft';
+        } else {
+            // Update the direction based on y and x velocities
+            return dy > 0 ? 'ArrowDown' : 'ArrowUp';
+        }
+    }
+
+    function shrinkGameArea() {
+        const currentWidth = gameArea.clientWidth;
         const currentHeight = gameArea.clientHeight;
 
         if (currentWidth > minGameAreaSize && currentHeight > minGameAreaSize) {
@@ -159,6 +160,7 @@ function shrinkGameArea() {
     }
 
     function updateArrows() {
+        console.log(`Arrows count: ${arrows.length}`);
         for (let i = arrows.length - 1; i >= 0; i--) {
             const arrow = arrows[i];
             arrow.move();
@@ -184,6 +186,7 @@ function shrinkGameArea() {
     function updateGame() {
         if (gameActive) {
             gameDuration += 0.1;
+            console.log(`Game Duration: ${gameDuration.toFixed(1)} seconds`);
         }
 
         clearInterval(gameInterval);
